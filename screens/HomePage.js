@@ -1,6 +1,9 @@
 import {View, Text, StyleSheet, TextInput, Pressable, Animated} from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 
+//unsupported on nodeveloper
+import {unzip} from 'react-native-zip-archive';
+
 
 import Octicons from '@expo/vector-icons/Octicons';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
@@ -9,18 +12,25 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import Searchbar from '../components/Searchbar';
 import SubmitButton from '../components/SubmitButton';
+import { fetchSchedule } from '../services/fetchSchedule';
 
 
 export default function HomePage({navigation}){
-    const slideAnim = useRef(new Animated.Value(400)).current;
+    const slideAnim = useRef(new Animated.Value(500)).current;
     const [buttonsPressed, setButtonsPressed] = useState(false);
     const [text, onChangeText] = useState('');
     const [textSecond, onChangeTextSecond] = useState('');
 
 
     function handleOnPressSubmit(){
-        navigation.navigate('MapPage');
+        navigation.navigate('TimetablePage');
+        handleSearch();
     }
+
+    const handleSearch = async()=> {
+        const data = await fetchSchedule();
+        console.log('handleSearch data is: ', data);
+    };
 
 
     useEffect(()=> {
@@ -64,7 +74,7 @@ export default function HomePage({navigation}){
                     <Octicons name="location" size={100} color="black" />
                 </View>
                 <View style={styles.info}>
-                    <Text style={styles.infoText}>Warsaw Bus Schedule</Text>
+                    <Text style={styles.infoText}>Poznań Bus Schedule</Text>
                 </View>
                 <Searchbar title={'Set the starting point'} onValueChange={onChangeText}/>
                 <Searchbar title={'Set the destination'} onValueChange={onChangeTextSecond}/>
