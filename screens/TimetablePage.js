@@ -1,10 +1,36 @@
-import {View, Text, StyleSheet} from 'react-native';
+import { useEffect, useState } from 'react';
+import {View, Text, StyleSheet, FlatList, Pressable} from 'react-native';
+import * as SQLite from 'expo-sqlite';
+
+import { db } from '../services/db';
+import TransportTypeBar from '../components/TransportTypeBar';
+
+export default function TimetablePage({navigation, data}){
+    const [routes, setRoutes] = useState([]);
+
+    useEffect(()=>{
+        if(routes){
+            loadRoutes();
+        }
+        return console.log('clean up');
+    },[])
+ 
+    async function loadRoutes() {
+        const db = await SQLite.openDatabaseAsync('gtfs.db');
+    
+        const result = await db.getAllAsync(
+          `SELECT route_id, route_short_name, route_long_name
+           FROM routes
+           ORDER BY route_short_name`
+        );
+    
+        setRoutes(result);
+      }
 
 
-export default function TimetablePage(){
     return (
         <View style={styles.rootContainer}>
-            <Text>Timetable Page</Text>
+            <TransportTypeBar data={routes}/>
         </View>
     );
 }
@@ -12,6 +38,5 @@ export default function TimetablePage(){
 const styles = StyleSheet.create({
     rootContainer: {
         flex: 1,
-        marginTop: 50,
     }
 })

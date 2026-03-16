@@ -1,10 +1,6 @@
 import {View, Text, StyleSheet, TextInput, Pressable, Animated} from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 
-//unsupported on nodeveloper
-import {unzip} from 'react-native-zip-archive';
-
-
 import Octicons from '@expo/vector-icons/Octicons';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
@@ -13,6 +9,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Searchbar from '../components/Searchbar';
 import SubmitButton from '../components/SubmitButton';
 import { fetchSchedule } from '../services/fetchSchedule';
+
+//const db = SQLite.openDatabase('gtfs.db');
 
 
 export default function HomePage({navigation}){
@@ -29,7 +27,6 @@ export default function HomePage({navigation}){
 
     const handleSearch = async()=> {
         const data = await fetchSchedule();
-        console.log('handleSearch data is: ', data);
     };
 
 
