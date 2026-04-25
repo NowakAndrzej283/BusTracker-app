@@ -1,54 +1,55 @@
-import * as FileSystem from 'expo-file-system/legacy';
-import JSZip from 'jszip';
-import * as SQLite from 'expo-sqlite';
+import * as FileSystem from "expo-file-system/legacy";
+import JSZip from "jszip";
+import { getDB } from "./db";
+import parseCSV from "./parserCSV";
 
-import { db, DB_FLAG } from './db';
-import parseCSV from './parserCSV';
+export async function fetchSchedule() {
+  const db = await getDB();
 
+  const zipPath = FileSystem.documentDirectory + "data.zip";
 
-export const fetchSchedule = async () => {
+  const result = await FileSystem.downloadAsync(
+    "https://www.ztm.poznan.pl/pl/dla-deweloperow/getGTFSFile",
+    zipPath
+  );
 
-    //const db = SQLite.openDatabaseSync('gtfs.db');
+  const base64 = await FileSystem.readAsStringAsync(result.uri, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
 
-    // download the zip from api
-    const url = `https://www.ztm.poznan.pl/pl/dla-deweloperow/getGTFSFile`
+  const zip = await JSZip.loadAsync(base64, { base64: true });
 
-    const zipPath = FileSystem.documentDirectory + 'data.zip';
+  const routesFile = zip.files["routes.txt"];
+  if (!routesFile) return;
 
-    const result = await FileSystem.downloadAsync(
-        `https://www.ztm.poznan.pl/pl/dla-deweloperow/getGTFSFile`,
-        zipPath
-    );
+  const text = await routesFile.async("string");
+  const routes = parseCSV(text);
 
-    console.log('ZIP saved in: ', zipPath);
+  await db.execAsync("BEGIN");
 
-    const base64 = await FileSystem.readAsStringAsync(result.uri, {
-        encoding: FileSystem.EncodingType.Base64
-    });
-
-    console.log('base64 to ', zip);
-
-    // unpack the zip
-    const zip = await JSZip.loadAsync(base64, {base64: true});
-
-    const routesFile = zip.files['routes.txt'];
-
-    if (routesFile && !DB_FLAG) {
-      const text = await routesFile.async("string");        // odczyt pliku jako string
-      const routes = parseCSV(text);                        // parsowanie CSV do obiektów
-    
-      console.log('inside routesFile parsing...');
-      for (const route of routes) {
-        await db.runAsync(
-          `INSERT OR REPLACE INTO routes
-          (route_id, route_short_name, route_long_name)
-          VALUES (?, ?, ?)`,
-          [route.route_id, route.route_short_name, route.route_long_name]
-        );
-      }
+  try {
+    for (const route of routes) {
+      await db.runAsync(
+        `
+        INSERT OR REPLACE INTO routes
+        (route_id, route_short_name, route_long_name, route_color)
+        VALUES (?, ?, ?, ?)
+        `,
+        [
+          route.route_id,
+          route.route_short_name,
+          route.route_long_name,
+          route.route_color
+        ]
+      );
     }
 
-   
+    await db.execAsync("COMMIT");
+  } catch (e) {
+    await db.execAsync("ROLLBACK");
+    throw e;
+  }
+}
     
 
 
@@ -75,7 +76,7 @@ export const fetchSchedule = async () => {
 
     // return data;
 
-  };
+  //};
   
   
   
