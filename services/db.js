@@ -1,25 +1,20 @@
-import * as SQLite from 'expo-sqlite';
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SQLite from "expo-sqlite";
 
+let database = null;
 
-export let db;
-export let DB_FLAG;
+export async function getDB() {
+  if (!database) {
+    database = await SQLite.openDatabaseAsync("gtfs.db");
 
-export async function initDB(){
-    
-    DB_FLAG = 'isInitialized';
-    if(DB_FLAG){
-        return;
-    }
-    db = await SQLite.openDatabaseAsync('gtfs.db');
- 
-    await db.execAsync(`
-    CREATE TABLE IF NOT EXISTS routes (
-      route_id TEXT PRIMARY KEY,
-      route_short_name TEXT,
-      route_long_name TEXT
-    );
+    await database.execAsync(`
+      CREATE TABLE IF NOT EXISTS routes (
+        route_id TEXT PRIMARY KEY,
+        route_short_name TEXT,
+        route_long_name TEXT,
+        route_color TEXT
+      );
     `);
+  }
 
-    return 'everything is good';
+  return database;
 }
