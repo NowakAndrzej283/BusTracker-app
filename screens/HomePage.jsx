@@ -2,15 +2,11 @@ import {View, Text, StyleSheet, TextInput, Pressable, Animated} from 'react-nati
 import { useEffect, useRef, useState } from 'react';
 
 import Octicons from '@expo/vector-icons/Octicons';
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import Searchbar from '../components/Searchbar';
 import SubmitButton from '../components/SubmitButton';
 import { fetchSchedule } from '../services/fetchSchedule';
-
-//const db = SQLite.openDatabase('gtfs.db');
 
 
 export default function HomePage({navigation}){
@@ -27,6 +23,8 @@ export default function HomePage({navigation}){
 
     const handleSearch = async()=> {
         const data = await fetchSchedule();
+        console.log('the schedule is being loaded: ', data);
+        
     };
 
 
@@ -71,7 +69,7 @@ export default function HomePage({navigation}){
                     <Octicons name="location" size={100} color="black" />
                 </View>
                 <View style={styles.info}>
-                    <Text style={styles.infoText}>Poznań Bus Schedule</Text>
+                    <Text style={styles.infoText}>Poznań Transport Schedule</Text>
                 </View>
                 <Searchbar title={'Set the starting point'} onValueChange={onChangeText}/>
                 <Searchbar title={'Set the destination'} onValueChange={onChangeTextSecond}/>
