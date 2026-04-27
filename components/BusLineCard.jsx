@@ -1,14 +1,14 @@
 import React from "react";
+import { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-export default function BusLineCard({route_id, route_short_name, route_long_name, route_color}) {
+function BusLineCard({route_id, route_short_name, route_long_name, route_color}) {
   const lineColor = route_color
     ? `#${route_color}`
     : "#2B58FF";
 
   return (
     <View style={styles.card}>
-      {/* numer linii */}
       <View
         style={[
           styles.badge,
@@ -19,8 +19,6 @@ export default function BusLineCard({route_id, route_short_name, route_long_name
           {route_short_name}
         </Text>
       </View>
-
-      {/* opis */}
       <View style={styles.info}>
         <Text style={styles.lineName}>
           {route_long_name}
@@ -33,6 +31,7 @@ export default function BusLineCard({route_id, route_short_name, route_long_name
     </View>
   );
 }
+export default memo(BusLineCard);
 
 const styles = StyleSheet.create({
   card: {

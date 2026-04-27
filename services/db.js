@@ -11,7 +11,8 @@ export async function getDB() {
         route_id TEXT PRIMARY KEY,
         route_short_name TEXT,
         route_long_name TEXT,
-        route_color TEXT
+        route_color TEXT,
+        route_type NUMBER
       );
     `);
   }

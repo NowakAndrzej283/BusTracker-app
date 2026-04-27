@@ -32,14 +32,15 @@ export async function fetchSchedule() {
       await db.runAsync(
         `
         INSERT OR REPLACE INTO routes
-        (route_id, route_short_name, route_long_name, route_color)
-        VALUES (?, ?, ?, ?)
+        (route_id, route_short_name, route_long_name, route_color, route_type)
+        VALUES (?, ?, ?, ?, ?)
         `,
         [
           route.route_id,
           route.route_short_name,
           route.route_long_name,
-          route.route_color
+          route.route_color,
+          route.route_type
         ]
       );
     }
@@ -51,33 +52,5 @@ export async function fetchSchedule() {
   }
 }
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // const data = {};
-
-    // for(let filename of Object.keys(zip.files)) {
-    //     const content = await zip.files[filename].async("string");
-    //     data[filename] = parseCSV(content);
-    //   }
-
-
-    // console.log('final data is :', data);
-
-    // return data;
-
-  //};
-  
-  
   
   

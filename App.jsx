@@ -7,13 +7,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
 
 import HomePage from './screens/HomePage';
 import TimetablePage from './screens/TimetablePage';
-import MapPage from './screens/MapPage';
+import MapPage from './screens/SettingsPage';
 import { fetchSchedule } from './services/fetchSchedule';
 import { useEffect, useState } from 'react';
+import SettingsPage from './screens/SettingsPage';
+import LoadingScreen from './components/LoadingScreen';
+
+import { TransportProvider } from './services/TransportContext';
 
 
 const BottomTab = createBottomTabNavigator();
@@ -32,9 +37,6 @@ const MyTheme = {
 
 
 export default function App() {
-  //const [dbInitialized, setDbInitialized] = useState(false);
-
-
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export default function App() {
   }, []);
 
   if (!ready) {
-    return <Text>Loading schedule...</Text>;
+    return <LoadingScreen />;
   }
 
 
@@ -55,6 +57,7 @@ export default function App() {
   return (
     <>
       <StatusBar style='dark'/>
+      <TransportProvider>
       <NavigationContainer theme={MyTheme}>
         <BottomTab.Navigator screenOptions={{
           headerBackground: () => (
@@ -77,9 +80,10 @@ export default function App() {
             component={TimetablePage} 
             options={{title: 'Schedule', tabBarIcon: ({color}) => (<FontAwesome6 name="bus-simple" size={24} color="black" />)}}
           />
-          <BottomTab.Screen name="MapPage" component={MapPage} options={{title: "Maps", tabBarIcon: ({color}) => (<FontAwesome name="map" size={24} color="black" />)}}/>
+          <BottomTab.Screen name="Settings" component={SettingsPage} options={{title: "Settings", tabBarIcon: ({color}) => (<MaterialIcons name="settings" size={24} color="black" />)}}/>
         </BottomTab.Navigator>
       </NavigationContainer>
+      </TransportProvider>
      
     </>
   );
